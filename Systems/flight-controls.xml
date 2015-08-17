@@ -505,16 +505,16 @@
             <output>gear/gear-pos-norm</output>
         </kinematic>
 
-        <kinematic name="Rudder Control">
+        <kinematic name="fcs/steer-pos-deg">
             <input>fcs/steer-pos-norm-dmd</input>
             <traverse>
                 <setting>
                     <position>-35</position>
-                    <time>15</time>
+                    <time>1.1</time>
                 </setting>
                 <setting>
                     <position>35</position>
-                    <time>15</time>
+                    <time>1.1</time>
                 </setting>
             </traverse>
             <output>fcs/steer-pos-deg</output>
