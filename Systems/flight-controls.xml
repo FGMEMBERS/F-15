@@ -121,7 +121,6 @@
                         </tableData>-->
                     </table>
                 </product>
-            <gain>0.3</gain>
             </function>
         </fcs_function>
 
@@ -505,8 +504,8 @@
             <output>gear/gear-pos-norm</output>
         </kinematic>
 
-        <kinematic name="fcs/steer-pos-deg">
-            <input>fcs/steer-pos-norm-dmd</input>
+        <!--<kinematic name="fcs/steer-pos-deg">
+            <input>fcs/steer-cmd-norm</input>
             <traverse>
                 <setting>
                     <position>-35</position>
@@ -518,7 +517,7 @@
                 </setting>
             </traverse>
             <output>fcs/steer-pos-deg</output>
-        </kinematic>
+        </kinematic>-->
     </channel>
 
     <channel name="Speedbrake">
