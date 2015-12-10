@@ -175,8 +175,8 @@ var update_dialog_checkboxes = func
 {
     if (getprop("consumables/fuel/tank[5]/selected") != nil)
     {
-        setprop ("sim/model/f15/systems/external-loads/external-wing-tanks", getprop("consumables/fuel/tank[5]/selected") or getprop("consumables/fuel/tank[6]/selected"));
-        setprop ("sim/model/f15/systems/external-loads/external-centre-tank", getprop("consumables/fuel/tank[7]/selected"));
+        setprop("sim/model/f15/systems/external-loads/external-wing-tanks", getprop("consumables/fuel/tank[5]/selected") or getprop("consumables/fuel/tank[6]/selected"));
+        setprop("sim/model/f15/systems/external-loads/external-centre-tank", getprop("consumables/fuel/tank[7]/selected"));
     }
 }
 

@@ -151,7 +151,7 @@ var fuel_update = func {
 	neg_g.update();
 	calc_levels();
 
-	if ( getprop("/sim/freeze/fuel") or getprop("sim/replay/time") > 0 ) { return }
+	if ( getprop("/sim/freeze/fuel") or getprop("/sim/replay/time") > 0 ) { return }
 
 	LBS_HOUR2GALS_PERIOD = LBS_HOUR2GALS_SEC * fuel_dt;
 	max_flow85000 = 85000 * LBS_HOUR2GALS_PERIOD; 
@@ -247,20 +247,17 @@ setlistener("sim/model/f15/controls/fuel/dump-switch", func(v) {
     {
         if (v.getValue())
         {
-            print("Start  dump");
             setprop("sim/multiplay/generic/int[0]", 1);
             setprop("fdm/jsbsim/propulsion/fuel_dump",1);
         }
         else
         { 
-            print("Stop dump");
             setprop("sim/multiplay/generic/int[0]", 0);
             setprop("fdm/jsbsim/propulsion/fuel_dump",0);
         } 
     }
     else 
     { 
-        print("no value");
         setprop("sim/multiplay/generic/int[0]", 0);
         setprop("fdm/jsbsim/propulsion/fuel_dump",0);
     }
@@ -279,9 +276,18 @@ setlistener("sim/model/f15/controls/fuel/refuel-probe-switch", func {
         if (v == 0)
         {
             r_probe.close();
+            setprop("fdm/jsbsim/propulsion/refuel",0);
+            setprop("fdm/jsbsim/propulsion/ground-refuel",0);
         }
         else
+        {
             r_probe.open();
+            if (wow)
+            {
+                setprop("fdm/jsbsim/propulsion/refuel",0);
+                setprop("fdm/jsbsim/propulsion/ground-refuel",1);
+            }
+        }
     }
 });
 
@@ -716,11 +722,11 @@ var set_fuel = func(total) {
             #
 # only consider non external tanks; or external tanks when connected.
 delta = t.adjust_level_by_delta(side, delta);
-                        }
-                        }
+        }
+    }
     total_delta = (total - getprop("consumables/fuel/total-fuel-lbs"));
     if (total_delta < 0)
-                    {
+    {
         total_delta = Tank1.adjust_level_by_delta(TankBothSide, total_delta);
         total_delta = Centre_External.adjust_level_by_delta(TankBothSide, total_delta);
     }

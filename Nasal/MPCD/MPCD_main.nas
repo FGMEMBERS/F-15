@@ -6,7 +6,7 @@
 # Richard Harrison: 2015-01-23 : rjh@zaretto.com
 # ---------------------------
 
-setprop ("/sim/startup/terminal-ansi-colors",0);
+setprop("/sim/startup/terminal-ansi-colors",0);
 
 var MPCDcanvas= canvas.new({
                            "name": "F-15 MPCD",
@@ -383,9 +383,9 @@ p_spin_recovery.p_spin_stick_left  = MPCDsvg.getElementById("p_spin_stick_left")
 p_spin_recovery.p_spin_stick_right  = MPCDsvg.getElementById("p_spin_stick_right");
 p_spin_recovery.update = func
 {
-    p_spin_recovery.p_spin_alpha.setText(sprintf("%d", getprop ("orientation/alpha-indicated-deg")));
-    p_spin_recovery.p_spin_alt.setText(sprintf("%5d", getprop ("instrumentation/altimeter/indicated-altitude-ft")));
-    p_spin_recovery.p_spin_cas.setText(sprintf("%3d", getprop ("instrumentation/airspeed-indicator/indicated-speed-kt")));
+    p_spin_recovery.p_spin_alpha.setText(sprintf("%d", getprop("orientation/alpha-indicated-deg")));
+    p_spin_recovery.p_spin_alt.setText(sprintf("%5d", getprop("instrumentation/altimeter/indicated-altitude-ft")));
+    p_spin_recovery.p_spin_cas.setText(sprintf("%3d", getprop("instrumentation/airspeed-indicator/indicated-speed-kt")));
 
     if (math.abs(getprop("fdm/jsbsim/velocities/r-rad_sec")) > 0.52631578947368421052631578947368 or math.abs(getprop("fdm/jsbsim/velocities/p-rad_sec")) > 0.022)
     {
@@ -416,8 +416,8 @@ p1_2.addMenuItem(3, "CBT JETT", p1_3);
 p1_2.addMenuItem(4, "WPN LOAD", p1_3);
 p1_2.addMenuItem(9, "M", p1_1);
 
-p1_3.gun_rounds = p1_3.addMenuItem(1, sprintf("HIGH\n%dM",getprop("/sim/model/f15/systems/gun/rounds")), p1_3);
-setlistener("/sim/model/f15/systems/gun/rounds", func(v) {
+p1_3.gun_rounds = p1_3.addMenuItem(1, sprintf("HIGH\n%dM",getprop("sim/model/f15/systems/gun/rounds")), p1_3);
+setlistener("sim/model/f15/systems/gun/rounds", func(v) {
                 if (v != nil)
                 {
                     p1_3.gun_rounds.title = sprintf("HIGH\n%dM",v.getValue());
