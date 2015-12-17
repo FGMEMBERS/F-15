@@ -32,12 +32,12 @@ var fixAirframe = func {
 	MinGreached = 0.0;
 	ResidualBend = 0.0;
 	FailureAileron = 0.0;
-	setprop ("sim/model/f15/wings/left-wing-torn", LeftWingTorn);
-	setprop ("sim/model/f15/wings/right-wing-torn", RightWingTorn);
+	setprop("sim/model/f15/wings/left-wing-torn", LeftWingTorn);
+	setprop("sim/model/f15/wings/right-wing-torn", RightWingTorn);
 }
 
 var computeWingBend = func {
-	var av_currentG = getprop ("sim/model/f15/instrumentation/g-meter/g-max-mooving-average") - 1.0;   # adjust to loading
+	var av_currentG = getprop("sim/model/f15/instrumentation/g-meter/g-max-mooving-average") - 1.0;   # adjust to loading
     if (av_currentG == nil) return;
 	#effects of normal acceleration
 
@@ -56,7 +56,7 @@ var computeWingBend = func {
             ResidualBend = MaxResidualBend;
 	}
 	WingBend = ResidualBend + currentG * BendFactor;
-	setprop ("surface-positions/wing-fold-pos-norm", WingBend);
+	setprop("surface-positions/wing-fold-pos-norm", WingBend);
 }
 
 #----------------------------------------------------------------------------
