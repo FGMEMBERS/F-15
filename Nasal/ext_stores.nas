@@ -175,8 +175,8 @@ var update_dialog_checkboxes = func
 {
     if (getprop("consumables/fuel/tank[5]/selected") != nil)
     {
-        setprop("sim/model/f15/systems/external-loads/external-wing-tanks", getprop("consumables/fuel/tank[5]/selected") or getprop("consumables/fuel/tank[6]/selected"));
-        setprop("sim/model/f15/systems/external-loads/external-centre-tank", getprop("consumables/fuel/tank[7]/selected"));
+        setprop ("sim/model/f15/systems/external-loads/external-wing-tanks", getprop("consumables/fuel/tank[5]/selected") or getprop("consumables/fuel/tank[6]/selected"));
+        setprop ("sim/model/f15/systems/external-loads/external-centre-tank", getprop("consumables/fuel/tank[7]/selected"));
     }
 }
 
@@ -292,6 +292,24 @@ var ext_loads_set = func(s)
         setprop("consumables/fuel/tank[6]/selected",true);
         setprop("consumables/fuel/tank[7]/selected",true);
     }
+    elsif ( s == "Air Superiority" ) 
+    {
+        b_set = 5;
+        setprop("payload/weight[0]/selected","AIM-120");
+        setprop("payload/weight[1]/selected","Droptank");
+        setprop("payload/weight[2]/selected","AIM-120");
+        setprop("payload/weight[3]/selected","AIM-120");
+        setprop("payload/weight[4]/selected","AIM-120");
+        setprop("payload/weight[5]/selected","none");
+        setprop("payload/weight[6]/selected","AIM-120");
+        setprop("payload/weight[7]/selected","AIM-120");
+        setprop("payload/weight[8]/selected","AIM-120");
+        setprop("payload/weight[9]/selected","Droptank");
+        setprop("payload/weight[10]/selected","AIM-120");
+        setprop("consumables/fuel/tank[5]/selected",true);
+        setprop("consumables/fuel/tank[6]/selected",true);
+        setprop("consumables/fuel/tank[7]/selected",false);
+    } 
     update_dialog_checkboxes();
 	update_wpstring();
     arm_selector();

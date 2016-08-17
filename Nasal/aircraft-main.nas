@@ -201,7 +201,7 @@ var splash_vec_loop = func
 #    var v_z = getprop("velocities/wBody-fps");
 #    var v_x_max = getprop("sim/model/f15/sf-x-max");
     var v_x_max =400;
-
+ 
     if (v_x > v_x_max) 
         v_x = v_x_max;
  
@@ -252,14 +252,14 @@ var n2_r = getprop("engines/engine[1]/n2");
     if(getprop("sim/current-view/internal"))
         setprop("fdm/jsbsim/systems/sound/cockpit-adjusted-external-volume",
                 0.2
-                + getprop("canopy/position-norm")-getprop("fdm/jsbsim/systems/ecs/pilot-helmet-volume-attenuation"));
+                + getprop("canopy/position-norm")-getprop("/controls/seat/pilot-helmet-volume-attenuation"));
     else
         setprop("fdm/jsbsim/systems/sound/cockpit-adjusted-external-volume",1);
 
 
     setprop_inrange("fdm/jsbsim/systems/sound/cockpit-effects-volume", 
              0.3
-             - getprop("fdm/jsbsim/systems/ecs/pilot-helmet-volume-attenuation"),0,1);
+             - getprop("/controls/seat/pilot-helmet-volume-attenuation"),0,1);
 
 #
 # cold end of the engines
@@ -385,7 +385,7 @@ var rate4modules = func {
     else
         r4_count = (int)(frame_rate * 0.26667);
 
-    aircraft.updateVSD();
+    emesary.GlobalTransmitter.NotifyAll(emesary.Notification.new("F15Update4",4));
     aircraft.updateTEWS();
     aircraft.updateMPCD();
     aircraft.electricsFrame();
@@ -441,7 +441,7 @@ var updateFCS = func {
 	Alpha = getprop("orientation/alpha-indicated-deg");
 	Throttle = getprop("controls/engines/engine/throttle");
 	e_trim = getprop("controls/flight/elevator-trim");
-	deltaT = getprop("sim/time/delta-sec");
+	deltaT = getprop ("sim/time/delta-sec");
 
     # the FDM has a combined aileron deflection so split this for animation purposes.
     var current_aileron = aileron.getValue();
@@ -450,7 +450,7 @@ var updateFCS = func {
     right_elev_generic.setDoubleValue(elev_output.getValue() - elevator_deflection_due_to_aileron_deflection);
     aileron_generic.setDoubleValue(-current_aileron);
 
-    currentG = getprop("accelerations/pilot-gdamped");
+    currentG = getprop ("accelerations/pilot-gdamped");
     # use interpolate to make it take 1.2seconds to affect the demand
 
     var dmd_afcs_roll = getprop("controls/flight/SAS-roll");
@@ -673,3 +673,4 @@ setlistener("sim/walker/outfit", func
             setprop("sim/model/hide-backseater",0);
     }
 });
+
