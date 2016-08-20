@@ -25,7 +25,6 @@
     <property value="0">systems/ecs/bleed-air-source</property>
 
     <property value="0">systems/ecs/canopy-position-dmd</property>
-    <property value="0">systems/ecs/pilot-helmet-volume-attenuation</property>
     <property value="0">systems/ecs/liquid-oxygen-activated</property>
     <!-- oxygen qty; 0 off, 1 normal, 2 emerg-->
     <property value="0">systems/ecs/oxygen-qty-test</property>
@@ -119,21 +118,21 @@
 
   </channel>
     <channel name="Canopy">
-      <!-- Canopy open/close operation. Timing from https://www.youtube.com/watch?v=MSWz55b_jtE 2:25 (about 5 seconds)-->
-    <kinematic name="systems/ecs/canopy-position">
-          <input>systems/ecs/canopy-position-dmd</input>
-          <traverse>
-              <setting>
-                  <position>0</position>
-                  <time>2</time>
-              </setting>
-              <setting>
-                  <position>1</position>
-                  <time>3</time>
-              </setting>
-          </traverse>
-          <output>/canopy/position-norm</output>
-      </kinematic>
+        <!-- Canopy open/close operation. Timing from https://www.youtube.com/watch?v=MSWz55b_jtE 2:25 (about 5 seconds)-->
+        <kinematic name="systems/ecs/canopy-position">
+            <input>systems/ecs/canopy-position-dmd</input>
+            <traverse>
+                <setting>
+                    <position>0</position>
+                    <time>2</time>
+                </setting>
+                <setting>
+                    <position>1</position>
+                    <time>3</time>
+                </setting>
+            </traverse>
+            <output>/canopy/position-norm</output>
+        </kinematic>
     </channel>
 
 

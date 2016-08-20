@@ -76,8 +76,8 @@ var F15HUD = {
         obj.alt_range = obj.get_element("alt_range");
         obj.ias_range = obj.get_element("ias_range");
 
-obj.target_locked = obj.get_element("target_locked");
-obj.target_locked.setVisible(0);
+        obj.target_locked = obj.get_element("target_locked");
+        obj.target_locked.setVisible(0);
 
         obj.window1 = obj.get_text("window1", "condensed.txf",9,1.4);
         obj.window2 = obj.get_text("window2", "condensed.txf",9,1.4);
@@ -332,15 +332,15 @@ var HUD_DataProvider  = {
     update : func() {
         me.IAS = getprop("velocities/airspeed-kt");
         me.Nz = getprop("sim/model/f15/instrumentation/g-meter/g-max-mooving-average");
-        me.WOW = getprop("gear/gear[1]/wow") or getprop("gear/gear[2]/wow");
+        me.WOW = getprop ("gear/gear[1]/wow") or getprop ("gear/gear[2]/wow");
         me.alpha = getprop("orientation/alpha-indicated-deg");
         me.beta = getprop("orientation/side-slip-deg");
-        me.altitude_ft =  getprop("position/altitude-ft");
+        me.altitude_ft =  getprop ("position/altitude-ft");
         me.heading =  getprop("orientation/heading-deg");
-        me.mach = getprop("velocities/mach");
+        me.mach = getprop ("velocities/mach");
         me.measured_altitude = getprop("instrumentation/altimeter/indicated-altitude-ft");
-        me.pitch =  getprop("orientation/pitch-deg");
-        me.roll =  getprop("orientation/roll-deg");
+        me.pitch =  getprop ("orientation/pitch-deg");
+        me.roll =  getprop ("orientation/roll-deg");
         me.speed = getprop("fdm/jsbsim/velocities/vt-fps");
         me.v = getprop("fdm/jsbsim/velocities/v-fps");
         me.w = getprop("fdm/jsbsim/velocities/w-fps");
@@ -381,7 +381,7 @@ var HUD_DataProvider  = {
 
         me.roll_rad = 0.0;
 
-        me.VV_x = -me.beta*10; # adjust for view
+        me.VV_x = me.beta*10; # adjust for view
         me.VV_y = me.alpha*10; # adjust for view
 
     },
