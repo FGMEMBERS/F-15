@@ -32,12 +32,26 @@ var AIM9 = {
         # p = Pylon.
         # mty = missile type.
         m.variant =string.lc(mty);
+# ID Map:
+# 0 - bullet
+# 1 - AIM-9 
+# 2 - AIM-120
+# 3- AIM-7
         if (mty == "AIM-9")
+        {
             mty = "aim9";
+            m.intid = 1;
+        }
         else if (mty == "AIM-7")
+        {
             mty = "aim7";
+            m.intid = 2;
+        }
         else if (mty == "AIM-120")
+        {
             mty = "aim120";
+            m.intid = 3;
+        }
 
         m.type = mty;
 
