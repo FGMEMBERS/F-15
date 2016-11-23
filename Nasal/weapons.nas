@@ -41,7 +41,7 @@ setlistener("sim/model/f15/controls/armament/weapon-selector", func(v)
 # Init
 var weapons_init = func()
 {
-	print("Initializing f15 weapons system");
+	print("Initializing F-15 weapons system");
 	ArmSwitch.setValue(0);
 	system_stop();
 	SysRunning.setBoolValue(0);
@@ -207,11 +207,13 @@ var update_sw_ready = func()
 
 var release_aim9 = func()
 {
-print("RELEASE AIM-9 status: ");
+#print("RELEASE AIM-9 status: ");
 	if (Current_missile != nil) {
-print(" status: ", Current_missile.status);
+#print(" status: ", Current_missile.status);
 		if ( Current_missile.status == 1 ) {
 			var phrase = Current_missile.type~" at: " ~ Current_missile.Tgt.Callsign.getValue();
+#            var m = notifications.GeoEventNotification.new(Current_missile.type, Current_missile.Tgt.Callsign, 1, 80+Current_missile.intid);
+#emesary.GlobalTransmitter.NotifyAll(m);
 			if (getprop("sim/model/f15/systems/armament/mp-messaging")) {
 				setprop("/sim/multiplay/chat", aircraft.defeatSpamFilter(phrase));
 			} else {
@@ -219,9 +221,9 @@ print(" status: ", Current_missile.status);
 			}
 			# Set the pylon empty:
 			var current_pylon = "payload/weight["~Current_missile.ID~"]/selected";
-print("Release ",current_pylon);
+#print("Release ",current_pylon);
 			setprop(current_pylon,"none");
-print("currently ",getprop(current_pylon));
+#print("currently ",getprop(current_pylon));
 			armament_update();
 setprop("sim/model/f15/systems/armament/launch-light",false);
 			Current_missile.release();
