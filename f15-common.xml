@@ -861,7 +861,7 @@
                             <sound-on-off type="bool">false</sound-on-off>
                             <sound-volume type="double">0.12</sound-volume>
                             <target-range-nm type="double">0</target-range-nm>
-                            <max-detection-rng-nm type="int">38.8</max-detection-rng-nm>
+                            <max-detection-rng-nm type="int">39</max-detection-rng-nm>
                             <fov-deg type="int">30</fov-deg>
                             <detection-fov-deg type="int">180</detection-fov-deg>
                             <track-max-deg type="int">135</track-max-deg>
