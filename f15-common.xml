@@ -861,7 +861,7 @@
                             <sound-on-off type="bool">false</sound-on-off>
                             <sound-volume type="double">0.12</sound-volume>
                             <target-range-nm type="double">0</target-range-nm>
-                            <max-detection-rng-nm type="int">39</max-detection-rng-nm>
+                            <max-detection-rng-nm type="int">38.8</max-detection-rng-nm>
                             <fov-deg type="int">30</fov-deg>
                             <detection-fov-deg type="int">180</detection-fov-deg>
                             <track-max-deg type="int">135</track-max-deg>
@@ -1262,6 +1262,7 @@
             <internal archive="y">true</internal>
             <config>
                 <x-offset-m archive="y">0.0</x-offset-m>
+                <!--<y-offset-m archive="y">1.4874214034</y-offset-m>-->
                 <y-offset-m archive="y">1.4000519827</y-offset-m>
                 <z-offset-m archive="y">-5</z-offset-m>
                 <pitch-offset-deg>-8</pitch-offset-deg>
@@ -2160,7 +2161,7 @@
             <file>Nasal/environment.nas</file>
         </environment>
         <blackout>
-            <file>Aircraft/f-15/Nasal/blackout.nas</file>
+            <file>Aircraft/F-15/Nasal/blackout.nas</file>
         </blackout>
     </nasal>
 
