@@ -52,7 +52,7 @@ var VSD_Device =
         dev_canvas.setColorBackground(0.0039215686274509803921568627451,0.17647058823529411764705882352941,0, 1.00);
 # Create a group for the parsed elements
         obj.VSDsvg = dev_canvas.createGroup();
-        var pres = canvas.parsesvg(obj.VSDsvg, "Nasal/VSD/VSD.svg");
+        var pres = canvas.parsesvg(obj.VSDsvg, "Aircraft/F-15/Nasal/VSD/VSD.svg");
 # Parse an SVG file and add the parsed elements to the given group
         printf("VSD : %s Load SVG %s",designation,pres);
         obj.VSDsvg.setTranslation(10,5);
@@ -78,7 +78,7 @@ var VSD_Device =
         obj.morhcue.setFont("condensed.txf").setFontSize(12, 1.2);
         obj.morhcue.setText ("mh");
         obj.morhcue.setVisible(0);
-        obj.max_symbols = 10;
+        obj.max_symbols = 21;
         obj.tgt_symbols =  setsize([], obj.max_symbols);
         obj.horizon_line = obj.VSDsvg.getElementById("horizon_line");
         obj.nofire_cross =  obj.VSDsvg.getElementById("nofire_cross");
@@ -92,6 +92,8 @@ var VSD_Device =
                 obj.tgt_symbols[i] = tgt;
                 tgt.setVisible(0);
             }
+            else
+              print("F-15: VSD: Missing symbol from VSD.svg: "~name);
         }
 
         obj.vsd_on = 1;
@@ -151,8 +153,10 @@ var VSD_Device =
         var w3_7 = sprintf("T %d",getprop("fdm/jsbsim/velocities/vc-kts"));
         var w2 = "";
         var designated = 0;
+    var active_found = 0;
         foreach( u; awg_9.tgts_list ) 
         {
+        if (u.get_display() == 1) {
             var callsign = "XX";
             if (u.Callsign != nil)
                 callsign = u.Callsign.getValue();
@@ -171,22 +175,30 @@ var VSD_Device =
 #if (u == awg_9.active_u)
                     {
                         designated = 1;
+                        active_found = 1;
                         tgt.setVisible(0);
                         tgt = me.tgt_symbols[0];
+                        tgt.setVisible(1);
 #                    w2 = sprintf("%-4d", u.get_closure_rate());
 #                    w3_22 = sprintf("%3d-%1.1f %.5s %.4s",u.get_bearing(), u.get_range(), callsign, model);
 #                    var aspect = u.get_reciprocal_bearing()/10;
 #                   w1 = sprintf("%4d %2d%s %2d %d", u.get_TAS(), aspect, aspect < 180 ? "r" : "l", u.get_heading(), u.get_altitude());
                     }
-                    tgt.setVisible(u.get_display());
+                    
                     var xc = u.get_deviation(heading);
                     var yc = -u.get_total_elevation(pitch);
+                    #tgt.setVisible(1);
+                    tgt.setTranslation (xc*1.55, yc*1.85);#Leto: the factors is to let display correspond to 120 degrees wide and height.
                     tgt.setVisible(1);
-                    tgt.setTranslation (xc, yc);
+                    tgt.update();
+    #tgt.setCenter (118,830 - pitch * pitch_factor-pitch_offset);
+    #tgt.setRotation (roll_rad);
                 }
             }
             if (!designated)
                 target_idx = target_idx+1;
+            designated = 0;
+        }
         }
         if (awg_9.active_u != nil)
         {
@@ -217,8 +229,12 @@ var VSD_Device =
                 tgt.setVisible(0);
             }
         }
-    },
-        };
+    if (active_found == 0) {
+        me.tgt_symbols[0].setVisible(0);
+    }
+}
+}
+;
 
 var VSD_array = [];
 

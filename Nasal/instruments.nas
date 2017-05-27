@@ -223,7 +223,8 @@ var ara_63_update = func
 # do not do anything whilst the AN/SPN 46 is within expiry time. 
     if(getprop("/sim/time/elapsed-sec") < recipient.ansn46_expiry)
         return;
-
+    if (!getprop("fdm/jsbsim/systems/electrics/dc-essential-bus1-powered"))
+      return;
 #
 # Use the standard civilian ILS
     setprop("sim/model/f15/lights/landing-chk-light", 0);
@@ -560,10 +561,11 @@ var main_loop = func {
 	cnt += 1;
 	# done each 0.05 sec.
 	mach = Mach.getValue();
-	awg_9.rdr_loop();
 	var a = cnt / 2;
 
     ownship_pos.set_latlon(getprop("position/latitude-deg"), getprop("position/longitude-deg"));
+
+	awg_9.rdr_loop();
 
 	burner +=1;
 	if ( burner == 3 ) { burner = 0 }

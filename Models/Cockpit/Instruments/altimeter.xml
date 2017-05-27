@@ -49,6 +49,8 @@
             <z>0</z>
         </axis>
     </animation>
+
+
     <animation>
         <type>textranslate</type>
         <object-name>drum-4</object-name>
@@ -71,7 +73,6 @@
     </animation>
 
 
-
     <animation>
         <type>textranslate</type>
         <object-name>drum-2</object-name>
@@ -92,8 +93,6 @@
             <z>0</z>
         </axis>
     </animation>
-
-
     <animation>
         <type>textranslate</type>
         <object-name>drum-3</object-name>
@@ -114,6 +113,7 @@
             <z>0</z>
         </axis>
     </animation>
+
     <animation>
         <type>select</type>
         <object-name>negativ-flag</object-name>

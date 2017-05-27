@@ -1,4 +1,5 @@
 // -*-C++-*-
+#version 120
 
 varying vec2 rawPos;
 varying vec2 nPos;
@@ -85,7 +86,7 @@ Mie =  smoothstep(0.9,1.0, MieFactor) * earthShade * earthShade * scattering;
 // get a reflection vector for cube map
 
 vec4 ecPosition = gl_ModelViewMatrix * gl_Vertex;
-normal = normalize(gl_NormalMatrix * gl_Normal);
+normal = -normalize(gl_NormalMatrix * gl_Normal);
 vec4 reflect_eye = vec4(reflect(ecPosition.xyz, normal), 0.0);
 vec3 reflVec_stat = normalize(gl_ModelViewMatrixInverse * reflect_eye).xyz;
 refl_vec = reflVec_stat;
@@ -121,7 +122,7 @@ vertPos = gl_Vertex.xyz;
 
 splash_angle = dot(gl_Normal, corrected_splash);
 
-ambient_fraction = length(light_ambient.rgb)/length(light_diffuse.rgb +light_ambient.rgb );
+ambient_fraction = length(light_ambient.rgb)/(length(light_diffuse.rgb +light_ambient.rgb ) + 0.01);
 
 
 gl_Position = ftransform();

@@ -64,6 +64,9 @@
         <description>F-15</description>
         <author>Richard Harrison, Enrique Laso, xii</author>
         <status>production</status>
+        <config>
+            <hud-filter type="int">1</hud-filter>
+        </config>
 
         <tags>
             <tag>fighter</tag>
@@ -173,6 +176,10 @@
             <key>
                 <name>y/Y</name>
                 <desc>Select next/prev target (by distance).</desc>
+            </key>
+            <key>
+                <name>Q</name>
+                <desc>Reset view</desc>
             </key>
             <line>JFS start: select JFS switch on engine panel; pull JFS lever and JFS will start providing there is enough pressure. 3 start attempts are possible.</line>
             <line>Engine start: Either start JFS or external air. Ensure both engines shutoff on engines panel. Start L engine then R engine.</line>
@@ -795,7 +802,7 @@
                         <clsn-light type="bool">false</clsn-light>
                         <!--Constant Angle Collision Steering enabled -->
                     </rio-nav-display>
-                    <uhf n="[0]">
+                    <uhf n="0">
                         <frequencies>
                             <selected-mhz type="int">225000</selected-mhz>
                         </frequencies>
@@ -1255,9 +1262,10 @@
             <internal archive="y">true</internal>
             <config>
                 <x-offset-m archive="y">0.0</x-offset-m>
-                <y-offset-m archive="y">1.457499884</y-offset-m>
+                <!--<y-offset-m archive="y">1.4874214034</y-offset-m>-->
+                <y-offset-m archive="y">1.4000519827</y-offset-m>
                 <z-offset-m archive="y">-5</z-offset-m>
-                <pitch-offset-deg>-15.3</pitch-offset-deg>
+                <pitch-offset-deg>-8</pitch-offset-deg>
                 <default-field-of-view-deg>85</default-field-of-view-deg>
                 <limits>
                     <enabled type="bool">true</enabled>
@@ -1868,6 +1876,14 @@
                     </script>
                 </binding>
             </key>
+            <key n="81">
+                <name>Q</name>
+                <desc>Reset view</desc>
+                <binding>
+                    <command>nasal</command>
+                    <script>aircraft.resetView();</script>
+                </binding>
+            </key>
                 <key n="82">
                 <name>R</name>
                 <desc>Increase Radar Range</desc>
@@ -2132,16 +2148,21 @@
             <file>Aircraft/F-15/Nasal/instruments.nas</file>
             <file>Aircraft/F-15/Nasal/afcs.nas</file>
             <file>Aircraft/F-15/Nasal/fox2.nas</file>
+            <file>Aircraft/F-15/Nasal/damage.nas</file>
             <file>Nasal/HUD/HUD_main.nas</file>
             <file>Nasal/VSD/VSD_main.nas</file>
             <file>Nasal/TEWS/TEWS_main.nas</file>
             <file>Nasal/MPCD/MPCD_main.nas</file>
             <file>Aircraft/F-15/Nasal/weapons.nas</file>
             <file>Aircraft/F-15/Nasal/ext_stores.nas</file>
+            <file>Aircraft/F-15/Nasal/crash-and-stress.nas</file>
         </aircraft>
         <environment>
             <file>Nasal/environment.nas</file>
         </environment>
+        <blackout>
+            <file>Aircraft/F-15/Nasal/blackout.nas</file>
+        </blackout>
     </nasal>
 
 </PropertyList>

@@ -1,4 +1,5 @@
 // -*-C++-*-
+#version 120
 
 varying vec2 rawPos;
 varying vec2 nPos;
@@ -14,6 +15,7 @@ uniform sampler2D texture;
 uniform sampler2D frost_texture;
 uniform sampler2D func_texture;
 uniform samplerCube cube_texture;
+uniform samplerCube cube_light_texture;
 
 uniform vec4 tint;
 uniform vec3 overlay_color;
@@ -29,26 +31,71 @@ uniform float overlay_glare;
 uniform float splash_x;
 uniform float splash_y;
 uniform float splash_z;
+uniform float lightmap_r_factor;
+uniform float lightmap_g_factor;
+uniform float lightmap_b_factor;
+uniform float lightmap_a_factor;
 uniform float osg_SimulationTime;
 
+uniform float sample_res;
+uniform float sample_far;
+uniform float hud_brightness;
+
 uniform int use_reflection;
+uniform int use_reflection_lightmap;
 uniform int use_mask;
 uniform int use_wipers;
 uniform int use_overlay;
 uniform int adaptive_mapping;
+uniform int lightmap_multi;
+
+uniform vec3 lightmap_r_color;
+uniform vec3 lightmap_g_color;
+uniform vec3 lightmap_b_color;
+uniform vec3 lightmap_a_color;
 
 float DotNoise2D(in vec2 coord, in float wavelength, in float fractionalMaxDotSize, in float dot_density);
 float DropletNoise2D(in vec2 coord, in float wavelength, in float fractionalMaxDotSize, in float dot_density);
 float Noise2D(in vec2 coord, in float wavelength);
+vec3 filter_combined (in vec3 color) ;
 
 void main()
 {
 
 vec4 texel;
+
+
+
 vec4 frost_texel;
 vec4 func_texel;
 
+
 texel = texture2D(texture, gl_TexCoord[0].st);
+
+texel+= texture2D(texture, vec2 (gl_TexCoord[0].s + sample_res, gl_TexCoord[0].t));
+texel+= texture2D(texture, vec2 (gl_TexCoord[0].s - sample_res, gl_TexCoord[0].t));
+texel+= texture2D(texture, vec2 (gl_TexCoord[0].s, gl_TexCoord[0].t + sample_res));
+texel+= texture2D(texture, vec2 (gl_TexCoord[0].s, gl_TexCoord[0].t - sample_res));
+
+texel+= 0.75* texture2D(texture, vec2 (gl_TexCoord[0].s + sample_far * sample_res, gl_TexCoord[0].t+ sample_far * sample_res));
+texel+= 0.75* texture2D(texture, vec2 (gl_TexCoord[0].s - sample_far * sample_res, gl_TexCoord[0].t+ sample_far * sample_res));
+texel+= 0.75* texture2D(texture, vec2 (gl_TexCoord[0].s + sample_far * sample_res, gl_TexCoord[0].t- sample_far * sample_res));
+texel+= 0.75* texture2D(texture, vec2 (gl_TexCoord[0].s - sample_far * sample_res, gl_TexCoord[0].t- sample_far * sample_res));
+
+texel+= 0.5 * texture2D(texture, vec2 (gl_TexCoord[0].s + 2.0 * sample_far * sample_res, gl_TexCoord[0].t - sample_res));
+texel+= 0.5 * texture2D(texture, vec2 (gl_TexCoord[0].s - 2.0 * sample_far * sample_res, gl_TexCoord[0].t + sample_res));
+texel+= 0.5 * texture2D(texture, vec2 (gl_TexCoord[0].s - sample_res, gl_TexCoord[0].t + 2.0 * sample_far * sample_res));
+texel+= 0.5 * texture2D(texture, vec2 (gl_TexCoord[0].s + sample_res, gl_TexCoord[0].t - 2.0 * sample_far * sample_res));
+
+texel/=10.0;
+
+float threshold_high = max(hud_brightness, 0.05) * 0.7;
+float threshold_low = max(hud_brightness, 0.05) * 0.4;
+float threshold_mid = max(hud_brightness, 0.05) * 0.5;
+
+texel.rgb = mix(texel.rgb, vec3 (1.0, 1.0, 1.0), smoothstep(threshold_mid, threshold_high, texel.a));
+texel.rgb = mix(texel.rgb, vec3 (0.0, 0.0, 0.0), 1.0 - smoothstep(0.0, threshold_low, texel.a));
+
 texel *=gl_Color;
 
 vec2 frost_coords;
@@ -58,7 +105,7 @@ else if (adaptive_mapping ==2) {frost_coords = nPos * 7.0;}
 else {frost_coords = vertPos.xy * 7.0;}
 
 frost_texel = texture2D(frost_texture, frost_coords);
-func_texel = texture2D(func_texture, gl_TexCoord[0].st);
+func_texel = texture2D(func_texture, gl_TexCoord[0].st * 2.0);
 
 
 
@@ -66,9 +113,37 @@ float noise_003m = Noise2D(vertPos.xy, 0.03);
 float noise_0003m = Noise2D(vertPos.xy, 0.003);
 
 
-// environment reflection
+// environment reflection, including a lightmap for the reflections
 
 vec4 reflection = textureCube(cube_texture, refl_vec);
+vec4 reflection_lighting = textureCube(cube_light_texture, refl_vec);
+
+vec3 lightmapcolor = vec3(0.0, 0.0, 0.0);
+
+
+if (use_reflection_lightmap == 1)
+	{
+	vec4 lightmapFactor = vec4(lightmap_r_factor, lightmap_g_factor, lightmap_b_factor, lightmap_a_factor);
+        lightmapFactor = lightmapFactor * reflection_lighting;
+        if (lightmap_multi > 0 )
+		{
+	        lightmapcolor = lightmap_r_color * lightmapFactor.r +
+                lightmap_g_color * lightmapFactor.g +
+                lightmap_b_color * lightmapFactor.b +
+                lightmap_a_color * lightmapFactor.a ;
+            	}
+	 else 
+		{
+                lightmapcolor = reflection_lighting.rgb * lightmap_r_color * lightmapFactor.r;
+            	}
+
+	}
+
+float lightmap_intensity = length(lightmapcolor);
+float light_fraction = clamp(lightmap_intensity / (length(light_diffuse.rgb) + 0.01), 0.0, 5.0);
+
+if (light_fraction < 1.0) {light_fraction = smoothstep(0.7, 1.0, light_fraction);}
+
 
 if (use_reflection ==1)
 	{
@@ -76,9 +151,12 @@ if (use_reflection ==1)
 	// assumption that its normal will be opposite to the glass normal
 	// (which is mostly truish in a normal cockpit)
 	float reflection_shade = ambient_fraction + (1.0-ambient_fraction) * max(0.0, dot (normalize(normal),  normalize(gl_LightSource[0].position.xyz)));
-	texel.rgb = mix(texel.rgb, reflection.rgb, reflection_strength *  reflection_shade * (1.0-Mie));
+
+	texel.rgb = mix(texel.rgb, reflection.rgb, (reflection_strength *  reflection_shade  * (1.0-Mie)));
 
 	}
+
+//texel.rgb = mix(texel.rgb, lightmapcolor.rgb, lightmap_intensity);
 
 // overlay pattern
 
@@ -174,7 +252,16 @@ rainColor.rgb *= length(light_diffuse)/1.73;
 
 
 vec4 outerColor = mix(texel, rainColor, rain_factor);
+// now mix illuminated reflections in
+
+vec3 reflLitColor = reflection.rgb * lightmapcolor.rgb;
+
+outerColor.rgb = mix(outerColor.rgb, reflLitColor, clamp(reflection_strength * light_fraction,0.0,1.0));
+outerColor.a = max(outerColor.a, 0.1 * light_fraction * reflection_strength);
+
 outerColor  *= tint;
+
+
 
 
 // fogging - this is inside the glass
@@ -193,10 +280,10 @@ vec4 fragColor;
 fragColor.rgb = mix(outerColor.rgb, fog_texel.rgb, fog_texel.a);
 fragColor.a = max(outerColor.a, fog_texel.a);
 
+fragColor.rgb = filter_combined(fragColor.rgb);
+
 
 gl_FragColor = clamp(fragColor,0.0,1.0);
-
-//gl_FragColor = vec4(normal,1.0);
 
 
 }
