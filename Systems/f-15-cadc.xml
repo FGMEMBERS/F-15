@@ -37,6 +37,7 @@
     <property>fcs/hook-engage</property>
     <property>fcs/flap-cmd-sum</property>
     <property>fcs/roll-trim-sas-cmd-norm</property>
+	<property>systems/afcs/elevator-cmd-delta</property>
 
     <channel name="extra-aero">
         <!-- need %Cg in chord for moments [Xcg - Xref)/100] -->
@@ -46,22 +47,140 @@
             <output>inertia/cg-x-offset-chord-in</output>
         </summer>
        <!-- figure out the factor for the fuel tank aero -->
-       <fcs_function name="metrics/stores-tank-factor">
-           <function>
-               <sum>
-                   <ifthen><ge><property>inertia/pointmass-weight-lbs[1]</property><value>1</value></ge>
-                       <value>0.3</value>
-                       <value>0</value>
-                   </ifthen>
-                   <ifthen><ge><property>inertia/pointmass-weight-lbs[5]</property><value>1</value></ge>
-                       <value>0.4</value>
-                       <value>0</value>
-                   </ifthen>
-                   <ifthen><ge><property>inertia/pointmass-weight-lbs[9]</property><value>1</value></ge>
-                       <value>0.3</value>
-                       <value>0</value>
-                   </ifthen>
-               </sum>
+        <fcs_function name="metrics/stores-tank-factor">
+            <function>
+                <sum>
+                    <ifthen>
+                        <ge>
+                            <property>inertia/pointmass-weight-lbs[1]</property>
+                            <value>1</value>
+                        </ge>
+                        <value>0.3</value>
+                        <value>0</value>
+                    </ifthen>
+                    <ifthen>
+                        <ge>
+                            <property>inertia/pointmass-weight-lbs[5]</property>
+                            <value>1</value>
+                        </ge>
+                        <value>0.4</value>
+                        <value>0</value>
+                    </ifthen>
+                    <ifthen>
+                        <ge>
+                            <property>inertia/pointmass-weight-lbs[9]</property>
+                            <value>1</value>
+                        </ge>
+                        <value>0.3</value>
+                        <value>0</value>
+                    </ifthen>
+                </sum>
+            </function>
+        </fcs_function>
+        <fcs_function name="metrics/stores-tank-factor">
+            <function>
+                <sum>
+                    <ifthen>
+                        <ge>
+                            <property>inertia/pointmass-weight-lbs[1]</property>
+                            <value>1</value>
+                        </ge>
+                        <value>0.3</value>
+                        <value>0</value>
+                    </ifthen>
+                    <ifthen>
+                        <ge>
+                            <property>inertia/pointmass-weight-lbs[5]</property>
+                            <value>1</value>
+                        </ge>
+                        <value>0.4</value>
+                        <value>0</value>
+                    </ifthen>
+                    <ifthen>
+                        <ge>
+                            <property>inertia/pointmass-weight-lbs[9]</property>
+                            <value>1</value>
+                        </ge>
+                        <value>0.3</value>
+                        <value>0</value>
+                    </ifthen>
+                </sum>
+            </function>
+        </fcs_function>
+        <fcs_function name="metrics/stores-aiml-factor">
+            <function>
+                <sum>
+                    <ifthen>
+                        <ge>
+                            <property>inertia/pointmass-weight-lbs[0]</property>
+                            <value>1</value>
+                        </ge>
+                        <value>0.35</value>
+                        <value>0</value>
+                    </ifthen>
+                    <ifthen>
+                        <ge>
+                            <property>inertia/pointmass-weight-lbs[2]</property>
+                            <value>1</value>
+                        </ge>
+                        <value>0.35</value>
+                        <value>0</value>
+                    </ifthen>
+                    <ifthen>
+                        <ge>
+                            <property>inertia/pointmass-weight-lbs[3]</property>
+                            <value>1</value>
+                        </ge>
+                        <value>0.15</value>
+                        <value>0</value>
+                    </ifthen>
+                    <ifthen>
+                        <ge>
+                            <property>inertia/pointmass-weight-lbs[4]</property>
+                            <value>1</value>
+                        </ge>
+                        <value>0.15</value>
+                        <value>0</value>
+                    </ifthen>
+                </sum>
+            </function>
+        </fcs_function>
+        <fcs_function name="metrics/stores-aimr-factor">
+            <function>
+                <sum>
+                    <ifthen>
+                        <ge>
+                            <property>inertia/pointmass-weight-lbs[6]</property>
+                            <value>1</value>
+                        </ge>
+                        <value>0.35</value>
+                        <value>0</value>
+                    </ifthen>
+                    <ifthen>
+                        <ge>
+                            <property>inertia/pointmass-weight-lbs[7]</property>
+                            <value>1</value>
+                        </ge>
+                        <value>0.35</value>
+                        <value>0</value>
+                    </ifthen>
+                    <ifthen>
+                        <ge>
+                            <property>inertia/pointmass-weight-lbs[8]</property>
+                            <value>1</value>
+                        </ge>
+                        <value>0.15</value>
+                        <value>0</value>
+                    </ifthen>
+                    <ifthen>
+                        <ge>
+                            <property>inertia/pointmass-weight-lbs[10]</property>
+                            <value>1</value>
+                        </ge>
+                        <value>0.15</value>
+                        <value>0</value>
+                    </ifthen>
+                </sum>
             </function>
         </fcs_function>
 
@@ -184,15 +303,19 @@
         <fcs_function name="aero/alpha-indicated-deg">
             <description>ARI nose probe; ref ADA101648 p84; alpha_true = .8122 alphaNOSEPROBE + .797deg</description>
             <function>
-                <product>
-                    <sum>
-                        <property> aero/alpha-deg </property>
-                        <value> -0.797 </value>
-                    </sum>
-                    <value>1.231223836</value>
-                </product>
+                <ifthen><eq><property>position/aircraft-on-ground</property><value>1</value></eq>
+                    <value>0</value>
+                    <product>
+                        <sum>
+                            <property> aero/alpha-deg </property>
+                            <value> -0.797 </value>
+                        </sum>
+                        <value>1.231223836</value>
+                    </product>
+                </ifthen>
             </function>
         </fcs_function>
+        
         <fcs_function name="aero/aero-rp-x-in">
             <function>
                 <description>Centre of pressure due to mach</description>
@@ -233,16 +356,16 @@
                         <independentVar lookup="row">velocities/vc-kts</independentVar>
                         <independentVar lookup="column">fcs/flap-pos-deg</independentVar>
                         <tableData>
-                            0          35
-                            0    -0.28860   -0.28860
-                            200   -0.188860   0.188860
-                            310   -0.061875   0.061875
-                            415   -0.037920   0.037920
-                            520    0.020500   0.020500
-                            620    0.001877   0.001877
-                            740    0.134250   0.134250
-                            820    0.174000   0.174000
-                            900    0.216250   0.216250
+                                          0          35
+                              0    -0.28860   -0.122750
+                            200   -0.188860   -0.102750
+                            310   -0.061875    0.022125
+                            415   -0.037920    0.076125
+                            520    0.020500    0.076125
+                            620    0.001877    0.076125
+                            740    0.134250    0.076125
+                            820    0.174000    0.076125
+                            900    0.216250    0.076125
                         </tableData>
                     </table>
                 </sum>
@@ -447,109 +570,6 @@
             </function>
             <output>fcs/gear-windfx-volume</output>
         </fcs_function>
-    </channel>
-
-  
-    <channel name="AFCS">
-        <!-- ensure within operating envelope -->
-
-        <switch name="systems/afcs/altitude-hold-trigger">
-            <default value="0.0"/>
-            <test value="1.0">
-                <and>
-                    propulsion/engine[0]/set-running == 0
-                    propulsion/engine[1]/set-running == 0
-                    systems/afcs/altitude-hold-active ne 0
-                </and>
-            </test>
-        </switch>
-
-        <summer name="systems/afcs/altitude-hold-divergence">
-            <input> systems/afcs/target-altitude-ft </input>
-            <input> -position/h-sl-ft </input>
-        </summer>
-
-
-        <switch name="systems/afcs/altitude-hold-alt-diff-delta">
-            <default value="0.0"/>
-
-            <test value="0">
-                systems/afcs/altitude-hold-divergence lt 20
-                systems/afcs/altitude-hold-divergence gt -20
-            </test>
-
-            <test value="-systems/afcs/altitude-hold-lag-constant">
-                systems/afcs/altitude-hold-divergence gt 10
-                systems/afcs/altitude-hold-divergence lt systems/afcs/altitude-hold-alt-diff-feet
-            </test>
-
-            <test value="systems/afcs/altitude-hold-lag-constant">
-                systems/afcs/altitude-hold-divergence lt -10
-                systems/afcs/altitude-hold-divergence gt systems/afcs/altitude-hold-alt-diff-feet
-            </test>
-
-            <test value="-systems/afcs/altitude-hold-lag-constant">
-                systems/afcs/altitude-hold-divergence lt -4
-                systems/afcs/altitude-hold-alt-diff-feet ge -2000
-            </test>
-
-            <test value="systems/afcs/altitude-hold-lag-constant">
-                systems/afcs/altitude-hold-divergence gt 4
-                systems/afcs/altitude-hold-alt-diff-feet le 2000
-            </test>
-
-
-        </switch>
-
-        <summer name="systems/afcs/altitude-hold-alt-diff-feet1">
-            <input>systems/afcs/altitude-hold-alt-diff-feet</input>
-            <input>systems/afcs/altitude-hold-alt-diff-delta</input>
-            <output>systems/afcs/altitude-hold-alt-diff-feet</output>
-        </summer>
-
-        <pure_gain name="systems/afcs/altitude-hold-vsi-dmd-fps">
-            <input> systems/afcs/altitude-hold-alt-diff-feet </input>
-            <gain>0.0166666666666667</gain>
-            <!-- from fpm to fps -->
-        </pure_gain>
-
-        <summer name="systems/afcs/altitude-hold-vsi">
-            <input> systems/afcs/altitude-hold-vsi-dmd-fps </input>
-            <input> -velocities/h-dot-fps  </input>
-        </summer>
-
-        <switch name="systems/afcs/altitude-hold-dmd-vsi">
-            <default value="0.0"/>
-            <test value="systems/afcs/altitude-hold-vsi">
-                systems/afcs/altitude-hold-active == 1
-            </test>
-        </switch>
-
-        <pid name="systems/afcs/altitude-hold-divergence-pid">
-            <input>systems/afcs/altitude-hold-dmd-vsi</input>
-            <kp> systems/afcs/altitude-hold-pid-kp </kp>
-            <ki> systems/afcs/altitude-hold-pid-ki </ki>
-            <kd> systems/afcs/altitude-hold-pid-kd </kd>
-            <trigger> systems/afcs/altitude-hold-trigger </trigger>
-        </pid>
-
-        <!--
-        <pure_gain name="systems/afcs/altitude-hold-divergence-pid-contents">
-            <input> systems/afcs/altitude-hold-divergence-pid </input>
-            <gain> 1.0 </gain>
-            <output>systems/afcs/altitude-hold-divergence-pid-contents</output>
-        </pure_gain>
--->
-        <pure_gain name="systems/afcs/elevator-cmd-out">
-            <input> systems/afcs/altitude-hold-divergence-pid </input>
-            <gain> -systems/afcs/altitude-hold-elevator-gain </gain>
-            <clipto>
-                <min> -0.6</min>
-                <max> 0.6</max>
-            </clipto>
-            <output>systems/afcs/elevator-cmd-delta</output>
-        </pure_gain>
-
     </channel>
 
     <channel name="Inlet Control">
@@ -789,8 +809,6 @@
                 velocities/vc-kts lt 200
             </test>
         </switch>
-
-
     </channel>
 
     <channel name="OWS" execrate="4">

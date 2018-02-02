@@ -14,6 +14,26 @@ var deltaT = 1.0;
 
 var currentG = 1.0;
 
+#
+# 2017.3 or earlier FG compatibility fixes
+# Remove after 2017.4
+string.truncateAt = func(src, match){
+    var rv = nil;
+    call(func {
+    if (src != nil and match !=nil){
+        var pos = find(match,src);
+        if (pos>=0)
+          src=substr(src,0,pos);
+    }
+},
+        nil, var err = []);
+    return src;
+
+}
+#
+#
+
+
 #----------------------------------------------------------------------------
 # Nozzle opening
 #----------------------------------------------------------------------------
@@ -40,6 +60,8 @@ var Throttle = 0;
 var e_trim = 0;
 var rudder_trim = 0;
 var aileron = props.globals.getNode("surface-positions/left-aileron-pos-norm", 1);
+var radarStandbyNode = props.globals.getNode("instrumentation/radar/radar-standby",1);
+var radarMPnode = props.globals.getNode("instrumentation/radar/radar-mode",1);
 
 
 # Utilities #########
@@ -392,6 +414,7 @@ var rate4modules = func {
 	aircraft.computeNWS ();
 aircraft.update_weapons_over_mp();
 updateVolume();
+    radarStandbyNode.setValue((radarMPnode.getValue() or 0)>= 2);
 #	settimer (rate4modules, 0.20);
 
 #
@@ -411,11 +434,11 @@ var rate2modules = func {
     if (r2_count > 0)
         return;
 
-    var frame_rate = getprop("/sim/frame-rate");
-    if (frame_rate <= 15 or frame_rate > 100)
+#    var frame_rate = getprop("/sim/frame-rate");
+#    if (frame_rate <= 15 or frame_rate > 100)
         r2_count = 2;
-    else
-        r2_count = (int)(frame_rate * 0.1333);
+#    else
+#        r2_count = (int)(frame_rate * 0.1333);
 
     aircraft.updateHUD();
 #	settimer (rate2modules, 0.1);
@@ -451,28 +474,8 @@ var updateFCS = func {
     aileron_generic.setDoubleValue(-current_aileron);
 
     currentG = getprop ("accelerations/pilot-gdamped");
-    # use interpolate to make it take 1.2seconds to affect the demand
-
-    var dmd_afcs_roll = getprop("controls/flight/SAS-roll");
-    var roll_mode = getprop("autopilot/locks/heading");
-
-    if(roll_mode != "dg-heading-hold" and roll_mode != "wing-leveler" and roll_mode != "true-heading-hold" )
-        setprop("fdm/jsbsim/fcs/roll-trim-sas-cmd-norm",0);
-    else
-    {
-        var roll = getprop("orientation/roll-deg");
-        if (dmd_afcs_roll < -0.11) dmd_afcs_roll = -0.11;
-        else if (dmd_afcs_roll > 0.11) dmd_afcs_roll = 0.11;
-
-#print("AFCS ",roll," DMD ",dmd_afcs_roll, " SAS=", getprop("controls/flight/SAS-roll"), " cur=",getprop("fdm/jsbsim/fcs/roll-trim-cmd-norm"));
-        if (roll < -45 and dmd_afcs_roll < 0) dms_afcs_roll = 0;
-        if (roll > 45 and dmd_afcs_roll > 0) dms_afcs_roll = 0;
-
-        interpolate("fdm/jsbsim/fcs/roll-trim-sas-cmd-norm",dmd_afcs_roll,0.1);
-    }
 
 	#update functions
-    aircraft.computeAPC();
 	aircraft.computeEngines ();
 	aircraft.computeAdverse ();
 rate2modules();
@@ -485,7 +488,7 @@ var startProcess = func {
 	settimer (updateFCS, 1.0);
 	position_flash_init();
 #slat_output.setDoubleValue(0);
-
+	var autopilot = gui.Dialog.new("sim/gui/dialogs/autopilot/dialog", "Aircraft/F-15/Systems/autopilot-dlg.xml");
 }
 var two_seater = getprop("fdm/jsbsim/metrics/two-place-canopy");
 if (two_seater)
@@ -493,6 +496,10 @@ print("F-15 two seat variant (B,D,E)");
 
 setlistener("/sim/signals/fdm-initialized", startProcess);
 
+setlistener("sim/model/f15/controls/AFCS/cas-takeoff-trim", func(v) {
+print("Takeoff trim");
+setprop("controls/flight/elevator-trim", -0.43);
+});
 #----------------------------------------------------------------------------
 # View change: Ctrl-V switchback to view #0 but switch to Rio view when already
 # in view #0.
@@ -552,9 +559,9 @@ var quickstart = func() {
     setprop("engines/engine[1]/out-of-fuel",0);
     setprop("engines/engine[1]/run",1);
     setprop("engines/engine[1]/run",1);
-    setprop("fdm/jsbsim/fcs/pitch-damper-enable",1);
-    setprop("fdm/jsbsim/fcs/roll-damper-enable",1);
-    setprop("fdm/jsbsim/fcs/yaw-damper-enable",1);
+    setprop("sim/model/f15/controls/CAS/pitch-damper-enable",1);
+    setprop("sim/model/f15/controls/CAS/roll-damper-enable",1);
+    setprop("sim/model/f15/controls/CAS/yaw-damper-enable",1);
 
 setprop("engines/engine[1]/cutoff",0);
 setprop("engines/engine[0]/cutoff",0);
@@ -596,9 +603,9 @@ var cold_and_dark = func()
     setprop("controls/lighting/stby-inst", 0);
     setprop("controls/lighting/warn-caution", 0);
 
-    setprop("fdm/jsbsim/fcs/pitch-damper-enable",0);
-    setprop("fdm/jsbsim/fcs/roll-damper-enable",0);
-    setprop("fdm/jsbsim/fcs/yaw-damper-enable",0);
+    setprop("sim/model/f15/controls/CAS/pitch-damper-enable",0);
+    setprop("sim/model/f15/controls/CAS/roll-damper-enable",0);
+    setprop("sim/model/f15/controls/CAS/yaw-damper-enable",0);
 
     setprop("sim/model/f15/controls/HUD/brightness",0);
     setprop("sim/model/f15/controls/HUD/on-off",false);
@@ -679,4 +686,23 @@ var resetView = func () {
   setprop("sim/current-view/heading-offset-deg", getprop("sim/current-view/config/heading-offset-deg"));
   setprop("sim/current-view/pitch-offset-deg", getprop("sim/current-view/config/pitch-offset-deg"));
   setprop("sim/current-view/roll-offset-deg", getprop("sim/current-view/config/roll-offset-deg"));
+}
+
+dynamic_view.register(func {
+              me.default_plane(); 
+   });
+
+var ElevatorTrim  = props.globals.getNode("controls/flight/elevator-trim", 1);
+var t_increment     = 0.0075;
+var trimUp = func {
+    e_trim       = ElevatorTrim.getValue();
+    e_trim += (CurrentIAS < 120.0) ? t_increment : t_increment * 14400 / (CurrentIAS*CurrentIAS);
+    if (e_trim > 1) e_trim = 1;
+    ElevatorTrim.setValue(e_trim);
+}
+var trimDown = func {
+    e_trim       = ElevatorTrim.getValue();
+    e_trim -= (CurrentIAS < 120.0) ? t_increment : t_increment * 14400 / (CurrentIAS*CurrentIAS);
+    if (e_trim < -1) e_trim = -1;
+    ElevatorTrim.setValue(e_trim);
 }

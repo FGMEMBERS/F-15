@@ -24,6 +24,7 @@
 
             var self = cmdarg();
             print("Model load F-15 ", self.getPath());
+
 if(find("F-15D.xml", getprop("sim/model/path")) != -1)
 {
 setprop("sim/model/f15/variant","D");
@@ -34,97 +35,80 @@ else
 setprop("sim/model/f15/variant","C");
 }
             var skip = 0;
-            var str = self.getNode("sim/multiplay/generic/string[13]");
-            if (str == nil) {
+            var lat = self.getNode("rotors/main/blade[0]/flap-deg");
+            var lon = self.getNode("rotors/main/blade[1]/flap-deg");
+            var alt = self.getNode("rotors/main/blade[2]/flap-deg");
+            if (alt == nil or alt.getValue() == nil) {
               skip = 1;
-              #print("skip");
             }
 
             var objs = {};
 
-            var loop = func () {
-              if (str.getValue() == nil) {
-                settimer(loop, 0.05);
-                return;
-              }
+            var loop = func () {          
 
-              var mp_str = split(":", str.getValue());
-
-              foreach(var mis; mp_str) {
-                var mis_s = split(";", mis);
-                if (size(mis_s) == 4) {
-                  var id = mis_s[0];
-                  var objModel = objs[id];
-                  if (objModel == nil) {
-                    # create model
-                    #print("creating "~mis);
-                    var n = props.globals.getNode("models", 1);
-                    var i = 0;
-                    for (i = 0; 1==1; i += 1) {
-                      if (n.getChild("model", i, 0) == nil) {
-                        break;
-                      }
+              if(alt.getValue() != 0) {
+                var objModel = objs["first"];
+                if (objModel == nil) {
+                  # create model
+                  #print("creating missile");
+                  var n = props.globals.getNode("models", 1);
+                  var i = 0;
+                  for (i = 0; 1==1; i += 1) {
+                    if (n.getChild("model", i, 0) == nil) {
+                      break;
                     }
-                    objModel = n.getChild("model", i, 1);
-
-                    objModel.getNode("elevation",1).setDoubleValue(0);
-                    objModel.getNode("latitude",1).setDoubleValue(0);
-                    objModel.getNode("longitude",1).setDoubleValue(0);
-                    objModel.getNode("elevation-ft-prop",1).setValue(objModel.getPath()~"/elevation");
-                    objModel.getNode("latitude-deg-prop",1).setValue(objModel.getPath()~"/latitude");
-                    objModel.getNode("longitude-deg-prop",1).setValue(objModel.getPath()~"/longitude");
-                    objModel.getNode("heading-deg",1).setDoubleValue(0);
-                    objModel.getNode("pitch-deg",1).setDoubleValue(0);
-                    objModel.getNode("roll-deg",1).setDoubleValue(0);
-                    objModel.getNode("path",1).setValue("Aircraft/F-15/Models/Stores/MP_missile/mp_missile.xml");
-
-                    var loadNode = objModel.getNode("load", 1);
-                    loadNode.setBoolValue(1);
-
-                    objs[id] = objModel;
-                    loadNode.remove();
                   }
-                }            
-              }
+                  objModel = n.getChild("model", i, 1);
 
-              foreach(var obj; keys(objs)) {
-                var exist = 0;
-                foreach(var mis; mp_str) {
-                  var mis_s = split(";", mis);
-                  if (size(mis_s) == 4) {
-                    var id = mis_s[0];
-                    var objModel = objs[id];
-                    if (id != obj) {
-                      continue;
-                    }
-                    #print("found a missile!");
-                    exist = 1;
-                    var lat = num(mis_s[1]);
-                    var lon = num(mis_s[2]);
-                    var alt = num(mis_s[3]);
+                  objModel.getNode("elevation",1).setDoubleValue(0);
+                  objModel.getNode("latitude",1).setDoubleValue(0);
+                  objModel.getNode("longitude",1).setDoubleValue(0);
+                  objModel.getNode("elevation-ft-prop",1).setValue(objModel.getPath()~"/elevation");
+                  objModel.getNode("latitude-deg-prop",1).setValue(objModel.getPath()~"/latitude");
+                  objModel.getNode("longitude-deg-prop",1).setValue(objModel.getPath()~"/longitude");
+                  objModel.getNode("heading-deg",1).setDoubleValue(0);
+                  objModel.getNode("pitch-deg",1).setDoubleValue(0);
+                  objModel.getNode("roll-deg",1).setDoubleValue(0);
+                  objModel.getNode("path",1).setValue("Aircraft/JA37/Models/Armament/Weapons/MP_missile/mp_missile.xml");
 
-                    var objModel = objs[id];
-                    if (objModel == nil) {
-                      print("error: did not find mp missile.");
-                      return;
-                    }
-                    objModel.getNode("latitude").setDoubleValue(lat);
-                    objModel.getNode("longitude").setDoubleValue(lon);
-                    objModel.getNode("elevation").setDoubleValue(alt);
-                  }
+                  var loadNode = objModel.getNode("load", 1);
+                  loadNode.setBoolValue(1);
+
+                  objs["first"] = objModel;
+                  loadNode.remove();
                 }
-                if (exist == 0) {
-                  # remove model
-                  var objModel = objs[obj];
+              }
+              var exist = 0;
+              if(alt.getValue() != 0) {
+                exist = 1;
+
+                var objModel = objs["first"];
+                if (objModel == nil) {
+                  print("error: did not find mp missile.");
+                  return;
+                }# else {
+                #  print("found a missile!");
+                #}
+                objModel.getNode("latitude").setDoubleValue(lat.getValue());
+                objModel.getNode("longitude").setDoubleValue(lon.getValue());
+                objModel.getNode("elevation").setDoubleValue(alt.getValue()*M2FT);
+
+              }
+              if (exist == 0) {
+                # remove model
+                var objModel = objs["first"];
+                if (objModel != nil) {
                   objModel.remove();
-                  delete(objs, obj);
+                  delete(objs, "first");
                 }
               }
+
               if (self.getNode("valid") == 0 or self.getNode("valid") == nil) {
                 return;
               }
               settimer(loop, 0.05);
             }
+
             if (skip == 0) {
                 loop();
             }
@@ -276,11 +260,73 @@ var fn_vsd = resolvepath("Nasal") ~ "/VSD/VSD_main.nas";
         <object-name>WingTipPosL-Light</object-name>
         <object-name>WingTipPosR-Housing</object-name>
         <object-name>WingTipPosR-Light</object-name>
+        <object-name>CFT-right</object-name>
+        <object-name>CFT-left</object-name>
+        <object-name>CFT-left-pylons</object-name>
+        <object-name>CFT-right-pylons</object-name>
         <property-base>sim/model/livery</property-base>
         <texture-prop>texture</texture-prop>
         <texture>livery.AF80-0007.png</texture>
     </animation>
 
+    <animation>
+        <type>translate</type>
+        <object-name>aim-7-r3</object-name>
+        <object-name>aim-7-r4</object-name>
+        <object-name>aim120-r3</object-name>
+        <object-name>aim120-r4</object-name>
+        <factor>0.36</factor>
+        <property>fdm/jsbsim/propulsion/cft</property>
+        <axis>
+            <x>0</x>
+            <y>0.93</y>
+            <z>-1</z>
+        </axis>
+    </animation>
+    <animation>
+        <type>translate</type>
+
+        <object-name>aim120-l3</object-name>
+        <object-name>aim120-l4</object-name>
+        <object-name>aim-7-l3</object-name>
+        <object-name>aim-7-l4</object-name>
+        <factor>0.36</factor>
+        <property>fdm/jsbsim/propulsion/cft</property>
+        <axis>
+            <x>0</x>
+            <y>-0.93</y>
+            <z>-1</z>
+        </axis>
+    </animation>
+    <!-- adjust missile positions tanks to take account of conformal tanks (FAST PACK) hardpoints -->
+    <!--<animation>
+        <type>rotate</type>
+        <object-name>aim-7-r3</object-name>
+        <object-name>aim-7-r4</object-name>
+        <object-name>aim120-r3</object-name>
+        <object-name>aim120-r4</object-name>
+        <object-name>aim120-l3</object-name>
+        <object-name>aim120-l4</object-name>
+        <object-name>aim-7-l3</object-name>
+        <object-name>aim-7-l4</object-name>
+        <factor>45</factor>
+        <property>fdm/jsbsim/propulsion/cft</property>
+        <axis>
+            <object>pylon-axis-r</object>
+        </axis>
+    </animation>
+    <animation>
+        <type>rotate</type>
+        <object-name>aim120-l3</object-name>
+        <object-name>aim120-l4</object-name>
+        <object-name>aim-7-l3</object-name>
+        <object-name>aim-7-l4</object-name>
+        <factor>45</factor>
+        <property>fdm/jsbsim/propulsion/cft</property>
+        <axis>
+            <object>pylon-axis-l</object>
+        </axis>
+    </animation>-->
 
     <!-- Fuel Slipway -->
     <animation>
@@ -2047,6 +2093,36 @@ var fn_vsd = resolvepath("Nasal") ~ "/VSD/VSD_main.nas";
         <path>ground-fuelling-bowser94-f600.xml</path>
         <name>GroundRefuellingBowser</name>
     </model>
+
+    <animation>
+        <type>select</type>
+        <object-name>CFT-right</object-name>
+        <object-name>CFT-left</object-name>
+        <condition>
+            <not-equals>
+                <property>fdm/jsbsim/propulsion/cft</property>
+                <value>0</value>
+            </not-equals>
+        </condition>
+    </animation>
+    <animation>
+        <type>select</type>
+        <object-name>CFT-left-pylons</object-name>
+        <object-name>CFT-right-pylons</object-name>
+        <condition>
+            <not-equals>
+                <property>fdm/jsbsim/propulsion/cft</property>
+                <value>0</value>
+            </not-equals>
+            <or>
+                <property>payload/weight[3]/weight-lb</property>
+                <property>payload/weight[4]/weight-lb</property>
+                <property>payload/weight[6]/weight-lb</property>
+                <property>payload/weight[7]/weight-lb</property>
+            </or>
+        </condition>
+    </animation>
+
     <animation>
         <type>select</type>
         <object-name>aircraft-ladder</object-name>

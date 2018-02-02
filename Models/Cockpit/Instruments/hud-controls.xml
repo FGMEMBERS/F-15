@@ -12,11 +12,11 @@
         <object-name>HUDImage2</object-name>
     </effect>
 -->
-
-   <effect>
+    <effect>
         <inherits-from>Effects/f15hud</inherits-from>
         <object-name>HUDImage1</object-name>
         <object-name>HUDImage2</object-name>
+        <object-name>HUDImageBevels</object-name>
     </effect>
 
     <animation>
@@ -79,9 +79,10 @@
             </or>
         </condition>
     </animation>
+
     <animation>
         <type>pick</type>
-        <visible>true</visible>
+        <visible>false</visible>
         <object-name>master-caution-button</object-name>
         <action>
             <button>0</button>
