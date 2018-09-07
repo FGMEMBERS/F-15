@@ -155,7 +155,6 @@
             <splash-texture>Aircraft/F-15/f15d-splash.jpg</splash-texture>
             <splash-logo-image>Aircraft/F-15/f15d-splash-logo.png</splash-logo-image>
         </startup>
-
         <rating>
             <FDM type="int">5</FDM>
             <systems type="int">5</systems>
