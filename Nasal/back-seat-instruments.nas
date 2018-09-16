@@ -147,10 +147,9 @@ var backseat_update = maketimer(UPDATE_PERIOD, func
 	awg_9.rdr_loop();
     check_pilot_callsign();
     instruments_data_import();
-    emesary.GlobalTransmitter.NotifyAll(emesary.Notification.new("F15Update4", 1));
+#    emesary.GlobalTransmitter.NotifyAll(notificationUpdate4);
 
     #		instruments_data_export();
-    backseat_update.restart(UPDATE_PERIOD);
 });
 
 

@@ -438,7 +438,6 @@ var rate4modules = func {
     else
         r4_count = (int)(frame_rate * 0.26667);
 
-    emesary.GlobalTransmitter.NotifyAll(emesary.Notification.new("F15Update4",4));
     aircraft.electricsFrame();
 	aircraft.computeNWS ();
     aircraft.update_weapons_over_mp();
