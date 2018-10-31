@@ -1202,7 +1202,7 @@
             <config>
                 <x-offset-m archive="y">0.0</x-offset-m>
                 <!--<y-offset-m archive="y">1.4874214034</y-offset-m>-->
-                <y-offset-m archive="y">1.4000519827</y-offset-m>
+                <y-offset-m archive="y">1.401951318</y-offset-m>
                 <z-offset-m archive="y">-5</z-offset-m>
                 <pitch-offset-deg>-8</pitch-offset-deg>
                 <default-field-of-view-deg>85</default-field-of-view-deg>
@@ -2332,7 +2332,7 @@
             <file>Aircraft/F-15/Nasal/rcs.nas</file>
         </rcs>
         <aircraft>
-            <file>Nasal/M_exec.nas</file>
+            <file>Aircraft/F-15/Nasal/M_exec.nas</file>
             <file>Nasal/canvas/MFD_Generic.nas</file>
             <file>Aircraft/Generic/an_spn_46.nas</file>
             <file>Aircraft/Generic/an_spn_46.nas</file>
