@@ -301,10 +301,10 @@ var AIM = {
 		}
         if (m.pro_constant == nil) {
         	if (find("APN", m.navigation)!=-1) {
-        	m.pro_constant = 3;
+        		m.pro_constant = 3;
         	} else {
 	        	m.pro_constant = 3;
-        }
+	        }
         }
         if (m.force_lbf_1 == nil or m.force_lbf_1 == 0) {
         	m.force_lbf_1 = 0;
@@ -1876,7 +1876,7 @@ var AIM = {
 			me.t_LOS_norm_acc_fps2  = (me.t_LOS_norm_speed_fps - me.last_t_norm_speed)/me.dt;
 
 			me.last_t_norm_speed = me.t_LOS_norm_speed_fps;
-
+			
 			me.toBody = math.cos(me.curr_deviation_h*D2R);#convert perpendicular LOS acc. to perpendicular body acc.
 			if (me.toBody==0) me.toBody=0.00001;
 			
