@@ -23,7 +23,9 @@ var ca_ramp_light = props.globals.getNode("sim/model/f15/lights/ca-l-inlet", 1);
 
 var masterCaution_light = props.globals.getNode("sim/model/f15/instrumentation/warnings/master-caution", 1);
 var masterCaution_light_set = props.globals.getNode("sim/model/f15/controls/master-caution-set", 1);
-masterCaution_light_set.setBoolValue(0);
+var lightTest = props.globals.getNode("sim/model/f15/lights/master-test-lights",1);
+var electricsPowered = props.globals.getNode("fdm/jsbsim/systems/electrics/ac-essential-bus1",1);
+masterCaution_light_set.setDoubleValue(0);
 
 var jettisonLeft = props.globals.getNode("controls/armament/station[2]/jettison-all", 1);
 var jettisonRight = props.globals.getNode("controls/armament/station[7]/jettison-all", 1);
@@ -355,7 +357,7 @@ var runEMMISC = func {
         }
     }
 
-	if (getprop("sim/model/f15/controls/afcs/autopilot-disengage"))
+	if (getprop("sim/model/f15/controls/AFCS/autopilot-disengage"))
     {
         if (!getprop("sim/model/f15/lights/ca-auto-plt"))
         {
@@ -406,7 +408,7 @@ var runEMMISC = func {
             setprop("sim/model/f15/lights/ca-launch-bar",0);
         }
     }
-    if  (!getprop("fdm/jsbsim/fcs/yaw-damper-enable"))
+    if  (!getprop("sim/model/f15/controls/CAS/yaw-damper-enable"))
     {
         if (!getprop("sim/model/f15/lights/ca-cas-yaw"))
         {
@@ -474,7 +476,7 @@ var runEMMISC = func {
         }
     }
 
-    if  (!getprop("fdm/jsbsim/fcs/roll-damper-enable"))
+    if  (!getprop("sim/model/f15/controls/CAS/roll-damper-enable"))
     {
         if (!getprop("sim/model/f15/lights/ca-cas-roll"))
         {
@@ -491,7 +493,7 @@ var runEMMISC = func {
         }
     }
 
-    if  (!getprop("fdm/jsbsim/fcs/pitch-damper-enable"))
+    if  (!getprop("sim/model/f15/controls/CAS/pitch-damper-enable"))
     {
         if (!getprop("sim/model/f15/lights/ca-cas-pitch"))
         {
@@ -529,15 +531,16 @@ var runEMMISC = func {
         jettisonRight.setValue(0);
         jettisonLeft.setValue(0);
     }
-    if (!master_caution_active){
+
+    if (!master_caution_active or electricsPowered.getValue() < 5){
         masterCaution_light_set.setBoolValue(0);
-        masterCaution_light.setBoolValue(0);
+        masterCaution_light.setDoubleValue(0);
     }
     else
     {
-        if (masterCaution)
+        if (masterCaution or lightTest.getValue())
         {
-            masterCaution_light.setBoolValue(1);
+            masterCaution_light.setDoubleValue(1);
         }
     }
 }
@@ -548,7 +551,7 @@ var master_caution_pressed = func {
     masterCaution_light.setBoolValue(0);
     masterCaution_light_set.setBoolValue(0);
 
-    setprop("sim/model/f15/controls/afcs/autopilot-disengage",0);
+    setprop("sim/model/f15/controls/AFCS/autopilot-disengage",0);
 }
 
 var electricsFrame = func {
